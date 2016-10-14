@@ -32,14 +32,15 @@ def doy2cal(year, doy):
             day = doy - doy_until_last_month[i-1]
             break
 
-    cal = '-'.join([str(year), str(month), str(day)])
 
-    return cal
+    return [year, month, day]
 
 # Command-line Interface
 def cli():
     arguments = docopt(__doc__)
-    print(doy2cal(int(arguments.get('-y')), int(arguments.get('-d'))))
+    cal = doy2cal(int(arguments.get('-y')), int(arguments.get('-d')))
+    cal = '-'.join([str(cal[0]), str(cal[1]), str(cal[2])])
+    print(cal)
 
 if __name__ == '__main__':
     cli()
