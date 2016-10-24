@@ -63,9 +63,9 @@ def readRinexNav(file_nav, prn=' 4'):
     nav = DataFrame(np.hstack((np.asarray(sv, int)[:, None], data)), epoch,
                 ['sv', 'SVclockBias', 'SVclockDrift', 'SVclockDriftRate', 'IODE',
                 'Crs', 'DeltaN', 'M0', 'Cuc', 'Eccentricity', 'Cus', 'sqrtA', 'TimeEph',
-                'Cic', 'OMEGA', 'CIS', 'Io', 'Crc', 'omega', 'OMEGA DOT', 'IDOT',
+                'Cic', 'OMEGA', 'Cis', 'Io', 'Crc', 'omega', 'OMEGA DOT', 'IDOT',
                 'CodesL2', 'GPSWeek', 'L2Pflag', 'SVacc', 'SVhealth', 'TGD', 'IODC',
-                'TransTime', 'FitIntvl'])
+                'TransTime', 'FitIntvl', 'empty1', 'empty2'])
 
     return nav
 
