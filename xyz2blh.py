@@ -11,9 +11,9 @@ def xyz2blh(X, Y, Z):
     e2 = 2 * f - f ** 2
     L = math.atan(Y / X)
 
-    if Y < 0:
+    if X < 0:
         L = L + math.pi
-    elif X < 0 and Y > 0:
+    elif Y < 0 and X > 0:
         L = L + 2 * math.pi
 
     L = L * 180 / math.pi - 180
@@ -30,5 +30,5 @@ def xyz2blh(X, Y, Z):
     H = Z / math.sin(B) - N * (1 - e2)
     B = B * 180 / math.pi
 
-    return (B, L, H)
+    return [B, L, H]
 

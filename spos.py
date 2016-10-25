@@ -16,7 +16,9 @@ import math
 import numpy as np
 import rotate
 
-def spos(t, t_oe, M_0, Delta_n, sqrt_a, e, omega, Cuc, Cus, Crc, Crs, Cic, Cis, i_0, OMEGA_0, i_dot, OMEGA_DOT):
+import xyz2blh
+
+def orbit(t, t_oe, M_0, Delta_n, sqrt_a, e, omega, Cuc, Cus, Crc, Crs, Cic, Cis, i_0, OMEGA_0, i_dot, OMEGA_DOT):
     # 平均角速度
     mu = 3.986005e14
     n_0 = sqrt_a ** -3 * math.sqrt(mu)
@@ -71,7 +73,21 @@ def spos(t, t_oe, M_0, Delta_n, sqrt_a, e, omega, Cuc, Cus, Crc, Crs, Cic, Cis, 
 
     sat_pos = np.mat([[x_sat],[y_sat],[z_sat]])
 
-    wgs_84_pos = np.dot(np.dot(rotate.R3(-1*OMEGA),rotate.R1(-1*i)),sat_pos)
+    # wgs_84_pos = np.dot(np.dot(rotate.R3(-1*OMEGA),rotate.R1(-1*i)),sat_pos)
 
-    return wgs_84_pos
+    return [sat_pos, i, OMEGA]
     
+def inertial(sat_pos, i, OMEGA):
+    inertial_pos = np.dot(rotate.R1(-1*i),sat_pos)
+
+    return [inertial_pos, OMEGA]
+
+def ecef(inertial_pos, OMEGA):
+    wgs_84_pos = np.dot(rotate.R3(-1*OMEGA),inertial_pos)
+    return wgs_84_pos
+
+def groundtrack(wgs_84_pos):
+    [B, L, H] = xyz2blh.xyz2blh(wgs_84_pos.item(0), wgs_84_pos.item(1), wgs_84_pos.item(2))
+    return [B, L]
+
+
