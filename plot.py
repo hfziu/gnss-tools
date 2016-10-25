@@ -10,8 +10,9 @@ import math
 import pandas as pd
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
-#from mpl_toolkits.basemap import Basemap
+from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 
 def plot(prn, type='ECEF'):
@@ -78,6 +79,14 @@ def plot(prn, type='ECEF'):
     elif type == 'GT':
         fig = plt.figure()
         ax = fig.add_subplot(111)
+        map = Basemap(projection='cyl', lon_0=0)
+        map.drawcoastlines(color = 'grey')
+        map.drawparallels(np.arange(-90,90,30),labels=[1,0,0,0])
+        map.drawmeridians(np.arange(map.lonmin, map.lonmax+30, 60),labels=[0,0,0,1])
+
+        #map.drawmapboundary(fill_color='aqua')
+        #map.fillcontinents(color='aqua', lake_color='aqua')
+
         
         for t in range(518400, 604800, 300):
             [xyz_orbit, i, OMEGA] = spos.orbit(t, t_oe, M_0, Delta_n, sqrt_a, e, omega,
@@ -85,7 +94,9 @@ def plot(prn, type='ECEF'):
             [xyz_inertial, OMEGA] = spos.inertial(xyz_orbit, i, OMEGA)
             xyz_ECEF = spos.ecef(xyz_inertial, OMEGA)
             [B, L] = spos.groundtrack(xyz_ECEF)
-            ax.scatter(L, B, s=1)
+            ax.scatter(L, B, c='red', s=2)
+
+
 
         plt.show()
     elif type == 'POLAR':
