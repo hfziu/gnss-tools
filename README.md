@@ -13,3 +13,11 @@ Global navigation satellite system (GNSS) analysis tools by Python
 - [ ] Command-Line 界面优化
 - [ ] 通用性改进：兼容更多样式的 Rinex 文件
 - [ ] 模块整理
+
+## Requirements:
+- python3
+- matplotlib
+- numpy
+- pathlib2
+- basemap
+- docopt
