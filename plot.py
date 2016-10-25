@@ -1,10 +1,27 @@
+#! /usr/bin/env python3
 # -*- coding: utf-8 -*-
+'''Plot GPS Satellite Track
+
+Usage:
+    plot --prn <prn> --type <type>
+
+Options:
+    --prn <prn> PRN number
+    --type <type> Plot type
+
+Example:
+    plot --prn ' 4' --type 'ECEF'
+
+'''
+
+
 
 from cal2gps import cal2gps
 import spos
 from rinex import readRinexNav
 import xyz2neu
 import neu2rael
+from docopt import docopt
 
 import math
 import pandas as pd
@@ -62,7 +79,7 @@ def plot(prn, type='ECEF'):
             elif type == 'ECI':
             # Test inertial
                 ax.scatter(xyz_inertial.item(0), xyz_inertial.item(1), xyz_inertial.item(2), s=1)
-            #ax.axis('equal')
+                #plt.axis('equal')
 
 
         # Plot
@@ -110,10 +127,20 @@ def plot(prn, type='ECEF'):
             xyz_ECEF = spos.ecef(xyz_inertial, OMEGA)
             [N, E, U] = xyz2neu.xyz2neu(xyz_ECEF.item(0), xyz_ECEF.item(1), xyz_ECEF.item(2), 39.9042, -116.9074, 0)
             [R, A, EL] = neu2rael.neu2rael(N, E, U)
-            ax.scatter(A, R * math.cos(EL), s=1)
+            if R > 1:
+                ax.scatter(A, R * math.cos(EL), s=1)
 
         plt.show()
         
+
+def cli():
+    arguments = docopt(__doc__)
+    prn = arguments.get('--prn')
+    t = arguments.get('--type')
+    plot(prn, t)
+
+if __name__ == "__main__":
+    cli()
 
 
 
