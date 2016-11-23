@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-function geo_ellipsoid returns the semi-major axis, flattening and other parameters for
+Function geo_ellipsoid returns the semi-major axis, flattening and other parameters for
 a particular reference ellipsoid.
 """
 import math
