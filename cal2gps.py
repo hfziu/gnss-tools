@@ -31,7 +31,6 @@ def cal2gps(year, month, day, hour, minute, second):
     keys = ['JD', 'FOD', 'GPSW', 'DOW', 'SOW', 'DOY']
     values = [JD, FOD, GPSW, DOW, SOW, DOY]
     return dict(zip(keys, values))
-    
 
 # Command-line Interface
 def cli():
