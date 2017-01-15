@@ -13,7 +13,7 @@ Options:
     -e <ellipsoid>  name of a particular reference ellipsoid
 
 Example:
-    blh2xyz -e 'WGS84' 50 50 0 
+    blh2xyz -e 'WGS84' 50 50 0
 """
 
 import math
@@ -21,10 +21,11 @@ from docopt import docopt
 
 from geo_ellipsoid import geo_ellipsoid
 
+
 def blh2xyz(ell, B, L, H):
     a = geo_ellipsoid(ell).a
     e2 = geo_ellipsoid(ell).e2
-    N = a / math.sqrt( 1 - e2 * math.sin(B) ** 2)
+    N = a / math.sqrt(1 - e2 * math.sin(B) ** 2)
     L = L / 180 * math.pi
     B = B / 180 * math.pi
 
@@ -34,9 +35,10 @@ def blh2xyz(ell, B, L, H):
 
     return [X, Y, Z]
 
+
 def cli():
     arguments = docopt(__doc__)
-    #print(arguments)
+    # print(arguments)
     ell = arguments.get('-e')
     B = float(arguments.get('<B>'))
     L = float(arguments.get('<L>'))
@@ -45,4 +47,3 @@ def cli():
 
 if __name__ == "__main__":
     cli()
-

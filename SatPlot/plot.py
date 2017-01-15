@@ -15,27 +15,21 @@ Example:
 '''
 
 
-
-from cal2gps import cal2gps
+import math
+import numpy as np
+from mpl_toolkits.basemap import Basemap
+import matplotlib.pyplot as plt
+from docopt import docopt
 import spos
 from rinex import readRinexNav
 import xyz2neu
 import neu2rael
-from docopt import docopt
-
-import math
-import pandas as pd
-import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
-from mpl_toolkits.basemap import Basemap
-import matplotlib.pyplot as plt
-from datetime import datetime
 
 
-def plot(prn, type='ECEF'):
+def plot(prn, ptype='ECEF'):
     # Get Data
     df = readRinexNav.readRinexNav('./brdc2750.16n', prn)
-    
+
     # Temp: Use data at 12:00:00
     T_r = 7
 
@@ -57,81 +51,87 @@ def plot(prn, type='ECEF'):
     i_dot = df['IDOT'][T_r]
     OMEGA_DOT = df['OMEGA DOT'][T_r]
 
-    if type == 'ECEF' or type == 'ECI':
+    if ptype == 'ECEF' or ptype == 'ECI':
         # Initialization
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
 
-
         # Calculate
         for t in range(518400, 604800, 300):
-            [xyz_orbit, i, OMEGA] = spos.orbit(t, t_oe, M_0, Delta_n, sqrt_a, e, omega,
-                    Cuc, Cus, Crc, Crs, Cic, Cis, i_0, OMEGA_0, i_dot, OMEGA_DOT)
+            [xyz_orbit, i, OMEGA] = spos.orbit(t, t_oe, M_0, Delta_n,
+                                               sqrt_a, e, omega, Cuc, Cus,
+                                               Crc, Crs, Cic, Cis, i_0,
+                                               OMEGA_0, i_dot, OMEGA_DOT)
             [xyz_inertial, OMEGA] = spos.inertial(xyz_orbit, i, OMEGA)
             xyz_ECEF = spos.ecef(xyz_inertial, OMEGA)
-            #x_ECEF.append(xyz_ECEF.item(0))
-            #y_ECEF.append(xyz_ECEF.item(1))
-            #z_ECEF.append(xyz_ECEF.item(2))
-            #print([xyz_ECEF.item(0),xyz_ECEF.item(1),xyz_ECEF.item(2)])
-            if type == 'ECEF':
-                ax.scatter(xyz_ECEF.item(0), xyz_ECEF.item(1), xyz_ECEF.item(2), s=1)
+            # x_ECEF.append(xyz_ECEF.item(0))
+            # y_ECEF.append(xyz_ECEF.item(1))
+            # z_ECEF.append(xyz_ECEF.item(2))
+            # print([xyz_ECEF.item(0),xyz_ECEF.item(1),xyz_ECEF.item(2)])
+            if ptype == 'ECEF':
+                ax.scatter(xyz_ECEF.item(0), xyz_ECEF.item(1),
+                           xyz_ECEF.item(2), s=1)
 
-            elif type == 'ECI':
-            # Test inertial
-                ax.scatter(xyz_inertial.item(0), xyz_inertial.item(1), xyz_inertial.item(2), s=1)
-                #plt.axis('equal')
-
+            elif ptype == 'ECI':
+                # Test inertial
+                ax.scatter(xyz_inertial.item(0),
+                           xyz_inertial.item(1), xyz_inertial.item(2), s=1)
+                # plt.axis('equal')
 
         # Plot
         u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
-        x=6371000 * np.cos(u)*np.sin(v)
-        y=6371000 * np.sin(u)*np.sin(v)
-        z=6371000 * np.cos(v)
+        x = 6371000 * np.cos(u) * np.sin(v)
+        y = 6371000 * np.sin(u) * np.sin(v)
+        z = 6371000 * np.cos(v)
         ax.plot_wireframe(x, y, z, color="r")
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
 
         plt.show()
-    elif type == 'GT':
+    elif ptype == 'GT':
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        map = Basemap(projection='cyl', lon_0=0)
-        map.drawcoastlines(color = 'grey')
-        map.drawparallels(np.arange(-90,90,30),labels=[1,0,0,0])
-        map.drawmeridians(np.arange(map.lonmin, map.lonmax+30, 60),labels=[0,0,0,1])
+        pmap = Basemap(projection='cyl', lon_0=0)
+        pmap.drawcoastlines(color='grey')
+        pmap.drawparallels(np.arange(-90, 90, 30), labels=[1, 0, 0, 0])
+        pmap.drawmeridians(np.arange(pmap.lonmin, pmap.lonmax+30, 60),
+                           labels=[0, 0, 0, 1])
 
-        #map.drawmapboundary(fill_color='aqua')
-        #map.fillcontinents(color='aqua', lake_color='aqua')
+        # map.drawmapboundary(fill_color='aqua')
+        # map.fillcontinents(color='aqua', lake_color='aqua')
 
-        
         for t in range(518400, 604800, 300):
-            [xyz_orbit, i, OMEGA] = spos.orbit(t, t_oe, M_0, Delta_n, sqrt_a, e, omega,
-                    Cuc, Cus, Crc, Crs, Cic, Cis, i_0, OMEGA_0, i_dot, OMEGA_DOT)
+            [xyz_orbit, i, OMEGA] = spos.orbit(t, t_oe, M_0,
+                                               Delta_n, sqrt_a, e, omega,
+                                               Cuc, Cus, Crc, Crs, Cic,
+                                               Cis, i_0, OMEGA_0, i_dot,
+                                               OMEGA_DOT)
             [xyz_inertial, OMEGA] = spos.inertial(xyz_orbit, i, OMEGA)
             xyz_ECEF = spos.ecef(xyz_inertial, OMEGA)
             [B, L] = spos.groundtrack(xyz_ECEF)
             ax.scatter(L, B, c='red', s=2)
 
-
-
         plt.show()
-    elif type == 'POLAR':
+    elif ptype == 'POLAR':
         fig = plt.figure()
-        ax = fig.add_subplot(111, polar = True)
-        
+        ax = fig.add_subplot(111, polar=True)
+
         for t in range(518400, 604800, 300):
-            [xyz_orbit, i, OMEGA] = spos.orbit(t, t_oe, M_0, Delta_n, sqrt_a, e, omega,
-                    Cuc, Cus, Crc, Crs, Cic, Cis, i_0, OMEGA_0, i_dot, OMEGA_DOT)
+            [xyz_orbit, i, OMEGA] = spos.orbit(t, t_oe, M_0, Delta_n,
+                                               sqrt_a, e, omega, Cuc,
+                                               Cus, Crc, Crs, Cic, Cis,
+                                               i_0, OMEGA_0, i_dot, OMEGA_DOT)
             [xyz_inertial, OMEGA] = spos.inertial(xyz_orbit, i, OMEGA)
             xyz_ECEF = spos.ecef(xyz_inertial, OMEGA)
-            [N, E, U] = xyz2neu.xyz2neu(xyz_ECEF.item(0), xyz_ECEF.item(1), xyz_ECEF.item(2), 39.9042, -116.9074, 0)
+            [N, E, U] = xyz2neu.xyz2neu(xyz_ECEF.item(0), xyz_ECEF.item(1),
+                                        xyz_ECEF.item(2), 39.9042, -116.9074, 0)
             [R, A, EL] = neu2rael.neu2rael(N, E, U)
             if R > 1:
                 ax.scatter(A, R * math.cos(EL), s=1)
 
         plt.show()
-        
+
 
 def cli():
     arguments = docopt(__doc__)
@@ -141,7 +141,3 @@ def cli():
 
 if __name__ == "__main__":
     cli()
-
-
-
-

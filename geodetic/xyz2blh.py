@@ -20,6 +20,7 @@ from docopt import docopt
 
 from geo_ellipsoid import geo_ellipsoid
 
+
 def xyz2blh(ell, X, Y, Z):
     a = geo_ellipsoid(ell).a
     e2 = geo_ellipsoid(ell).e2
@@ -33,7 +34,7 @@ def xyz2blh(ell, X, Y, Z):
 
     L = L * 180 / math.pi - 180
 
-    B = math.atan(Z / math.sqrt( X ** 2 + Y ** 2))
+    B = math.atan(Z / math.sqrt(X ** 2 + Y ** 2))
     B_iterative = 0
 
     while abs(B - B_iterative) > 1e-11:
@@ -47,9 +48,10 @@ def xyz2blh(ell, X, Y, Z):
 
     return [B, L, H]
 
+
 def cli():
     arguments = docopt(__doc__)
-    #print(arguments)
+    # print(arguments)
     ell = arguments.get('-e')
     X = float(arguments.get('<X>'))
     Y = float(arguments.get('<Y>'))
@@ -58,4 +60,3 @@ def cli():
 
 if __name__ == "__main__":
     cli()
-
