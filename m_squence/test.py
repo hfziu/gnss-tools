@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from m_squence import Register
-from prn_out import prn_out
+from .m_squence import Register
+from .prn_out import prn_out
 
 
 if __name__ == "__main__":

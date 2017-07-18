@@ -18,7 +18,7 @@ Example:
 import math
 from docopt import docopt
 
-from geo_ellipsoid import geo_ellipsoid
+from .geo_ellipsoid import geo_ellipsoid
 
 
 def xyz2blh(ell, X, Y, Z):
